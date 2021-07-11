@@ -14,9 +14,11 @@ centroidsY = fix(allBlobCentroids(2:2:end));
 % Put the labels on the rgb labeled image also.
 %plot(fix(centroidsX(1)), fix(centroidsY(1)), 'r*', 'LineWidth', 2, 'MarkerSize', 15)
 box_color = {'green'};
-
+x = 0; y=0;
 for c = 1:length(centroidsX)
     pos = [centroidsX(c) centroidsY(c)];
+    x = pos(1);
+    y = pos(2);
     text_str = ['X: ' num2str(pos(1),'%d') ' Y: ' num2str(pos(2),'%d')];
      out = insertText(bw,[pos(1),pos(2)],text_str,'FontSize',12,'BoxColor',...
      box_color,'BoxOpacity',0.4,'TextColor','white');
