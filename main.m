@@ -23,4 +23,4 @@ for c = 1:NUM_FRAMES
     writeVideo(v,I1);
 end
 close(v)
-!ffmpeg -i bl11.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+!ffmpeg -y -i bl11.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
