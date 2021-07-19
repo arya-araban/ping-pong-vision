@@ -17,8 +17,8 @@ box_color = {'green'};
 x = 0; y=0;
 for c = 1:length(centroidsX)
    pos = [centroidsX(c) centroidsY(c)];
-   % x = pos(1);
-   % y = pos(2);
+   x = pos(1);
+   y = pos(2);
    % out = bw;
     out = insertMarker(bw,[pos(1) pos(2);],'x','color',{'green'},'size',20);
     %text_str = ['X: ' num2str(pos(1),'%d') ' Y: ' num2str(pos(2),'%d')];
