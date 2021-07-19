@@ -6,7 +6,7 @@ v.VideoCompressionMethod
 open(v)
 %im = createOrangeMask(imread('C:\Users\Arya\Desktop\matlab-pp\pictures\games\1\100.png'))
 %imshow(single(im))
-worldPoints = 0;
+worldPoints = [0 0 0];
 NUM_FRAMES = 50;
 x1=0;y1=0;
 for c = 1:NUM_FRAMES
@@ -19,11 +19,14 @@ for c = 1:NUM_FRAMES
     [I1,x1,y1] = blob(I1);
     [I2,x2,y2] = blob(I2);
     %[x2,y2]
-    mp1 = [x1,y1];
-    mp2 = [x2,y2];
     if x1 ~= 0
+        mp1 = [x1,y1];
+        mp2 = [x2,y2];
+        prevPoints = worldPoints; 
         worldPoints = triangulate(mp1,mp2,stereoParams);
+        spd = norm(prevPoints-worldPoints);
         I1 = insertText(I1, [100 315 ], ['X: ' num2str(worldPoints(1)) ' Y: ' num2str(-worldPoints(2)) ' Z: ' num2str(worldPoints(3))]);
+        I1 = insertText(I1, [100 350 ], ['speed: ' num2str(spd) 'PPF']);
     end
     writeVideo(v,I1);
 end
