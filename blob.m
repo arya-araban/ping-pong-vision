@@ -1,5 +1,5 @@
 function [out, x, y] = blob(bw)
- out = bw;
+    out = bw;
     x = nan; y = nan;
     labeledImage = logical(bw);
     labeledImage = bwareafilt(labeledImage, 1, 'Largest');
