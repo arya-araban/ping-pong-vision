@@ -14,7 +14,7 @@ def capture_img(cn1, cn2):
             s2, img2 = cam2.read()
             picName1 = f'C{cn1}_pic{count}.png'
             picName2 = f'c{cn2}_pic{count}.png'
-            if count % 10 == 0:
+            if count % 50 == 0:
                 cv2.imwrite(f"./c{cn1}/{picName1}", img1)
                 cv2.imwrite(f"./c{cn2}/{picName2}", img2)
 
