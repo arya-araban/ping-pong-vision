@@ -1,8 +1,8 @@
 %clear;clc;
 v1 = VideoWriter('myFile.avi');
 %v2 = VideoWriter('myFile2.avi');
-rd1 = VideoReader('videos/bb1.avi');
-rd2 = VideoReader('videos/bb2.avi');
+rd1 = VideoReader('videos/output1.avi');
+rd2 = VideoReader('videos/output2.avi');
 v1.VideoCompressionMethod
 %v2.VideoCompressionMethod
 numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
@@ -20,12 +20,14 @@ while hasFrame(rd1)
     I1 =single(createBlueBallMask(I1));
     I2 =single(createBlueBallMask(I2));
     
-    [I1,x1,y1] = blob(I1);
-    [I2,x2,y2] = blob(I2);
+    [cnt_img1] = blob(I1);
+    [cnt_img2] = blob(I2);
     %[x2,y2]
-    if ~isnan(x1) && ~isnan(x2)
-        mp1 = [x1,y1];
-        mp2 = [x2,y2];
+    if isequal(size(cnt_img1),[1, 2]) && isequal(size(cnt_img2),[1, 2])
+        I1 = insertMarker(I1,cnt_img1,'x','color',{'green'},'size',20);
+        
+        mp1 = (cnt_img1(1,:));
+        mp2 = (cnt_img2(1,:));
         prevPoints = worldPoints; 
         worldPoints = triangulate(mp1,mp2,stereoParams)/10; % we divide by 10 to convert mm to cm 
         spd = norm(prevPoints-worldPoints)* FPS/100; %divide by another 100 to find MPS else it'll be CMPS
@@ -41,5 +43,5 @@ end
 close(v1)
 %close(v2)
 
-!ffmpeg -y -i videos/bb1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+!ffmpeg -y -i videos/output1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
 %!ffmpeg -y -i videos/hn2.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched2.avi"
