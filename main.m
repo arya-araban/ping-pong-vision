@@ -1,8 +1,8 @@
 %clear;clc;
 v1 = VideoWriter('myFile.avi');
 %v2 = VideoWriter('myFile2.avi');
-rd1 = VideoReader('videos/hn1.avi');
-rd2 = VideoReader('videos/hn2.avi');
+rd1 = VideoReader('videos/7.1.avi');
+rd2 = VideoReader('videos/7.2.avi');
 v1.VideoCompressionMethod
 %v2.VideoCompressionMethod
 numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
@@ -12,12 +12,13 @@ open(v1)
 worldPoints = [0 0 0];
 prevPoints = [0 0 0];
 overall_worldpoints = zeros(numFrames+10,4); %stores balls location in frame seen: x,y,z, speed
-FPS = 30;
+FPS = 30.0;
 
-FTC = 30.0; %frames to consider per second -- for every frame, put equal to FPS
+FTC = FPS/2; %frames to consider per second -- to get every frame, put equal to FPS
 
 frames_speed = FPS/FTC;
 
+spd=0;
 x1=0;y1=0;
 c = 1;
 while hasFrame(rd1)
@@ -36,11 +37,11 @@ while hasFrame(rd1)
         mp1 = (cnt_img1(1,:));
         mp2 = (cnt_img2(1,:));
        
-      
+        overall_worldpoints(c,[1,2,3]) = worldPoints;
         worldPoints = triangulate(mp1,mp2,stereoParams)/10; % we divide by 10 to convert mm to cm 
         if rem(c,frames_speed) == 0
             spd = norm(prevPoints-worldPoints)* FTC/100; %divide by another 100 to find MPS else it'll be CMPS
-            overall_worldpoints(c,:) = [worldPoints,spd];
+            overall_worldpoints(c, [4]) = spd;
         %note that norm(prevPoints-worldPoints) unit is cmpf (cm per frame)
             prevPoints = worldPoints; 
         end  
@@ -53,15 +54,19 @@ while hasFrame(rd1)
 end
 close(v1)
 
-%remove zero rows from WP's 
+%remove zero rows from WP's, and then first row(which is nonsensical speed)
 overall_worldpoints = overall_worldpoints(any(overall_worldpoints,2),:)
+overall_worldpoints = overall_worldpoints((2:end),:);
 
 %plot 3d x y z's of the tracked ball
-xs = overall_worldpoints(:,1); ys = overall_worldpoints(:,2);
-zs = overall_worldpoints(:,3); speeds = overall_worldpoints(:,4);
-plot3(xs,ys,zs)
-text(xs,ys,zs,num2cell(speeds))
+plot3(overall_worldpoints(:,1),overall_worldpoints(:,2),overall_worldpoints(:,3))
+
+%don't consider points where speed is zero for showing speed text
+overall_worldpoints = overall_worldpoints(logical(overall_worldpoints(:,4)),:);
 
 
-!ffmpeg -y -i videos/hn1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+text(overall_worldpoints(:,1),overall_worldpoints(:,2),overall_worldpoints(:,3),num2cell(overall_worldpoints(:,4)))
+
+
+!ffmpeg -y -i videos/7.1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
 %!ffmpeg -y -i videos/hn2.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched2.avi"
