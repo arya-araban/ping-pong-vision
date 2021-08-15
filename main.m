@@ -14,12 +14,11 @@ prevPoints = [0 0 0];
 overall_worldpoints = zeros(numFrames+10,4); %stores balls location in frame seen: x,y,z, speed
 FPS = 30.0;
 
-FTC = FPS/2; %frames to consider per second -- to get every frame, put equal to FPS
+FTC = FPS/1; %frames to consider per second -- to get every frame, put equal to FPS
 
 frames_speed = FPS/FTC;
 
-spd=0;
-x1=0;y1=0;
+spd=0; missed_frames = 0;
 c = 1;
 while hasFrame(rd1)
     I1 = read(rd1,c);
@@ -40,15 +39,19 @@ while hasFrame(rd1)
         overall_worldpoints(c,[1,2,3]) = worldPoints;
         worldPoints = triangulate(mp1,mp2,stereoParams)/10; % we divide by 10 to convert mm to cm 
         if rem(c,frames_speed) == 0
-            spd = norm(prevPoints-worldPoints)* FTC/100; %divide by another 100 to find MPS else it'll be CMPS
-            overall_worldpoints(c, [4]) = spd;
+            spd = norm(prevPoints-worldPoints)* (FTC/(missed_frames+1))/100; %divide by another 100 to find MPS else it'll be CMPS
+            %reset the valus
+            missed_frames =0; 
+            overall_worldpoints(c, (4)) = spd;
         %note that norm(prevPoints-worldPoints) unit is cmpf (cm per frame)
             prevPoints = worldPoints; 
         end  
         I1 = insertText(I1, [100 315 ], ['coords (cm): ' '[ X: ' num2str(worldPoints(1)) ' Y: ' num2str(-worldPoints(2)) ' Z: ' num2str(worldPoints(3)) ' ]']);
         I1 = insertText(I1, [100 350 ], ['speed: ' num2str(spd) ' Meters Per Sec']);
-        
-    end
+
+    else
+        missed_frames = missed_frames + 1; 
+    end 
     writeVideo(v1,I1);
     c = c + 1;
 end
