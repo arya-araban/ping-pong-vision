@@ -47,8 +47,8 @@ while hasFrame(rd1)
             spd_total = norm(worldPoints-prevPoints)* (FTC/(missed_frames+1))/100; %divide by another 100 to find MPS else it'll be CMPS
             
             %now we look to predict trajectory by using trajectory formula x1=x0+(v*deltaT)
-            velocity_seperate = (worldPoints-prevPoints)* (FTC/(missed_frames+1)); %keep this in CM since world points in CM
-            predicted_next_points = worldPoints + (velocity_seperate * (1/FTC));
+            velocity_seperate = (worldPoints-prevPoints)/(missed_frames+1); %keep this in CM since world points in CM
+            predicted_next_points = worldPoints + (velocity_seperate);
             [num2str(c) '---current_world_points:' mat2str(worldPoints) 'predicted next points:' mat2str(predicted_next_points)]
             %reset the valus
             missed_frames =0; 
