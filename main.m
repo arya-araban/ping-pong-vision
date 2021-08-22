@@ -1,8 +1,8 @@
 %clear;clc;
 v1 = VideoWriter('myFile.avi');
 %v2 = VideoWriter('myFile2.avi');
-rd1 = VideoReader('videos/5.1.avi');
-rd2 = VideoReader('videos/5.2.avi');
+rd1 = VideoReader('videos/hn1.avi');
+rd2 = VideoReader('videos/hn2.avi');
 v1.VideoCompressionMethod
 %v2.VideoCompressionMethod
 numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
@@ -24,8 +24,8 @@ while hasFrame(rd1)
     I1 = read(rd1,c);
     I2 = read(rd2,c);
     
-    I1 =single(createBlueBallMask22(I1));
-    I2 =single(createBlueBallMask22(I2));
+    I1 =single(createBlueBallMask(I1));
+    I2 =single(createBlueBallMask(I2));
     
     [cnt_img1] = blob(I1);
     [cnt_img2] = blob(I2);
@@ -40,14 +40,15 @@ while hasFrame(rd1)
         worldPoints = triangulate(mp1,mp2,stereoParams)/10; % we divide by 10 to convert mm to cm 
         overall_worldpoints(c,[1,2,3]) = worldPoints;
         if rem(c,frames_speed) == 0
-            %spd total is the speed considering all axis'. speed seperate
-            %has them seperately in each array 
+            %spd_total is the speed considering all axis'. 
+            %velocit_seperate has the vel for each axis' (can be either
+            %positive or negative, with respect to previous location)
             
-            spd_total = norm(prevPoints-worldPoints)* (FTC/(missed_frames+1))/100; %divide by another 100 to find MPS else it'll be CMPS
+            spd_total = norm(worldPoints-prevPoints)* (FTC/(missed_frames+1))/100; %divide by another 100 to find MPS else it'll be CMPS
             
             %now we look to predict trajectory by using trajectory formula x1=x0+(v*deltaT)
-            spd_seperate = abs(prevPoints-worldPoints)* (FTC/(missed_frames+1)); %keep this in CM since world points in CM
-            predicted_next_points = worldPoints + (spd_seperate * (1/FTC));
+            velocity_seperate = (worldPoints-prevPoints)* (FTC/(missed_frames+1)); %keep this in CM since world points in CM
+            predicted_next_points = worldPoints + (velocity_seperate * (1/FTC));
             [num2str(c) '---current_world_points:' mat2str(worldPoints) 'predicted next points:' mat2str(predicted_next_points)]
             %reset the valus
             missed_frames =0; 
@@ -83,5 +84,5 @@ overall_worldpoints = overall_worldpoints(logical(overall_worldpoints(:,4)),:);
 text(overall_worldpoints(:,1),overall_worldpoints(:,2),overall_worldpoints(:,3),num2cell(overall_worldpoints(:,4)))
 
 
-!ffmpeg -y -i videos/5.1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+!ffmpeg -y -i videos/hn1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
 %!ffmpeg -y -i videos/hn2.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched2.avi"
