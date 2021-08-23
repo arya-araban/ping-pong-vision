@@ -1,8 +1,8 @@
 %clear;clc;
 v1 = VideoWriter('myFile.avi');
 %v2 = VideoWriter('myFile2.avi');
-rd1 = VideoReader('videos/hn1.avi');
-rd2 = VideoReader('videos/hn2.avi');
+rd1 = VideoReader('videos/7.1.avi');
+rd2 = VideoReader('videos/7.2.avi');
 v1.VideoCompressionMethod
 %v2.VideoCompressionMethod
 numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
@@ -13,6 +13,7 @@ worldPoints = [0 0 0];
 prevPoints = [0 0 0];
 overall_worldpoints = zeros(numFrames+10,4); %stores balls location in frame seen: x,y,z, speed
 FPS = 30.0;
+time_frame = 0; offset = 0;%this is for gravity accaleration
 
 FTC = FPS/1; %frames to consider per second for speed -- to get every frame, put equal to FPS
 
@@ -39,6 +40,7 @@ while hasFrame(rd1)
         
         worldPoints = triangulate(mp1,mp2,stereoParams)/10; % we divide by 10 to convert mm to cm 
         overall_worldpoints(c,[1,2,3]) = worldPoints;
+        time_frame = time_frame + 1; 
         if rem(c,frames_speed) == 0
             %spd_total is the speed considering all axis'. 
             %velocit_seperate has the vel for each axis' (can be either
@@ -48,7 +50,8 @@ while hasFrame(rd1)
             
             %now we look to predict trajectory by using trajectory formula x1=x0+(v*deltaT)
             velocity_seperate = (worldPoints-prevPoints)/(missed_frames+1); %keep this in CM since world points in CM
-            predicted_next_points = worldPoints + (velocity_seperate);
+            accaleration = [0, 0.5*9.81*(time_frame/FPS)^2+offset, 0];
+            predicted_next_points = worldPoints + (velocity_seperate) + accaleration;
             [num2str(c) '---current_world_points:' mat2str(worldPoints) 'predicted next points:' mat2str(predicted_next_points)]
             %reset the valus
             missed_frames =0; 
@@ -84,5 +87,5 @@ overall_worldpoints = overall_worldpoints(logical(overall_worldpoints(:,4)),:);
 text(overall_worldpoints(:,1),overall_worldpoints(:,2),overall_worldpoints(:,3),num2cell(overall_worldpoints(:,4)))
 
 
-!ffmpeg -y -i videos/hn1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+!ffmpeg -y -i videos/7.1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
 %!ffmpeg -y -i videos/hn2.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched2.avi"
