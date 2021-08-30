@@ -1,6 +1,6 @@
 v1 = VideoWriter('myFile.avi');
-rd1 = VideoReader('videos/5.1.avi');
-rd2 = VideoReader('videos/5.2.avi');
+rd1 = VideoReader('videos/6.1.avi');
+rd2 = VideoReader('videos/6.2.avi');
 v1.VideoCompressionMethod
 numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
 open(v1)
@@ -92,5 +92,5 @@ overall_worldpoints = overall_worldpoints(logical(overall_worldpoints(:,4)),:);
 text(overall_worldpoints(:,1),overall_worldpoints(:,2),overall_worldpoints(:,3),num2cell(overall_worldpoints(:,4)))
 
 
-!ffmpeg -y -i videos/5.1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+!ffmpeg -y -i videos/6.1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
 %!ffmpeg -y -i videos/hn2.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched2.avi"
