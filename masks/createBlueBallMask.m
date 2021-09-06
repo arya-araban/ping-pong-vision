@@ -38,3 +38,6 @@ maskedRGBImage = RGB;
 maskedRGBImage(repmat(~BW,[1 1 3])) = 0;
 
 end
+
+
+
