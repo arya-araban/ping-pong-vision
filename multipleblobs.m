@@ -1,4 +1,4 @@
-function [centroids] = multipleblobs(bw, num_blobs)
+function [centroids,angle] = multipleblobs(bw, num_blobs)
     labeledImage = logical(bw);
     labeledImage = bwareafilt(labeledImage, num_blobs, 'Largest');
     blobMeasurements = regionprops(labeledImage, 'Centroid');
