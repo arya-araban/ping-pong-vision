@@ -1,7 +1,7 @@
 
 v1 = VideoWriter('myFile.avi');
-rd1 = VideoReader('videos/r1-1.avi');
-rd2 = VideoReader('videos/r1-2.avi');
+rd1 = VideoReader('videos/output1.avi');
+rd2 = VideoReader('videos/output2.avi');
 v1.VideoCompressionMethod
 numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
 open(v1)
@@ -22,15 +22,15 @@ angle = 0; %the angle of the blob, used mostly for if we have racket
 
 c = 1;
 while hasFrame(rd1)
-    I1 = read(rd1,c);
-    I2 = read(rd2,c);
+    Il1 = read(rd1,c);
+    Il2 = read(rd2,c);
     
-    I1 = single(createRedRacketMask(I1));
-    I2 = single(createRedRacketMask(I2));
+    I1 = single(createRedRacketMask(Il1));
+    I2 = single(createRedRacketMask(Il2));
     
     [cnt_img1, angle] = blob(I1);
     [cnt_img2, ~] = blob(I2);
-    %[x2,y2]
+    
     if isequal(size(cnt_img1),[1, 2]) && isequal(size(cnt_img2),[1, 2])
         
         
@@ -38,7 +38,7 @@ while hasFrame(rd1)
         mp2 = (cnt_img2(1,:));
         
         worldPoints = triangulate(mp1,mp2,stereoParams);  
-        [orn, I1]= construct3dOrientation(I1,I2,worldPoints, stereoParams);
+        [orn, I1]= construct3dOrientation2(Il1,Il2, stereoParams);
         
         I1 = insertMarker(I1,cnt_img1,'+','color',{'green'},'size',20);
         worldPoints = worldPoints/10;% we divide by 10 to convert mm to cm
@@ -67,7 +67,7 @@ while hasFrame(rd1)
             prevPoints = worldPoints; 
         end  
         
-        I1 = insertText(I1, [100 280 ], ['[ roll: ' num2str(angle.Orientation) ' pitch: ' num2str(orn(2)) ' yaw: ' num2str(orn(3)) ' ]']);
+        I1 = insertText(I1, [100 280 ], ['[ roll: ' num2str(orn(1)) ' pitch: ' num2str(orn(2)) ' yaw: ' num2str(orn(3)) ' ]']);
         I1 = insertText(I1, [100 315 ], ['coords (cm): ' '[ X: ' num2str(worldPoints(1)) ' Y: ' num2str(worldPoints(2)) ' Z: ' num2str(worldPoints(3)) ' ]']);
         
         I1 = insertText(I1, [100 350 ], ['speed: ' num2str(spd_total) ' Meters Per Sec']);
@@ -98,5 +98,5 @@ overall_worldpoints = overall_worldpoints(logical(overall_worldpoints(:,4)),:);
 text(overall_worldpoints(:,1),overall_worldpoints(:,2),overall_worldpoints(:,3),num2cell(overall_worldpoints(:,4)))
 
 
-!ffmpeg -y -i videos/r1-1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
+!ffmpeg -y -i videos/output1.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched.avi"
 %!ffmpeg -y -i videos/hn2.avi -i myFile.avi -filter_complex hstack -c:v ffv1 ./stiched2.avi"
