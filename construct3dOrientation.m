@@ -1,4 +1,4 @@
-function [orientation,img] = construct3dOrientation(bin_img1,bin_img2,centroid, stereoParams)
+function [orientation,img] = construct3dOrientation(bin_img1,bin_img2, stereoParams)
 %this function takes in two binary images, and finds the one minor axis,
 %and one major axis endpoint for each image. we then triangulate the
 %corresponding points to end up with two 3d vectors. we use these two
