@@ -14,21 +14,20 @@ overall_worldpoints = zeros(numFrames+10,4); %stores balls location in frame see
 FPS = 30.0;
 FTC = FPS/2; %frames to consider per second for speed -- to get every frame, put equal to FPS
 %time_frame = 0; offset = 0;%this is for gravity accaleration
-frames_speed = FPS/FTC;
+frames_speed = FPS/FTC; % we want to get each "n" frames, ie each 2 frames at a time. 
 spd_total=0; missed_frames = 0;
 
-angle = 0; %the angle of the blob, used mostly for if we have racket
 
 
 c = 1;
 while hasFrame(rd1)
-    Il1 = read(rd1,c);
-    Il2 = read(rd2,c);
+    I1_OG = read(rd1,c);
+    I2_OG = read(rd2,c);
     
-    I1 = single(createRedRacketMask(Il1));
-    I2 = single(createRedRacketMask(Il2));
+    I1 = single(createBlueBallMask(I1_OG));
+    I2 = single(createBlueBallMask(I2_OG));
     
-    [cnt_img1, angle] = blob(I1);
+    [cnt_img1, ~] = blob(I1);
     [cnt_img2, ~] = blob(I2);
     
     if isequal(size(cnt_img1),[1, 2]) && isequal(size(cnt_img2),[1, 2])
@@ -38,7 +37,7 @@ while hasFrame(rd1)
         mp2 = (cnt_img2(1,:));
         
         worldPoints = triangulate(mp1,mp2,stereoParams);  
-        [orn, I1]= construct3dOrientation2(Il1,Il2, stereoParams, I1);
+        [orn, I1]= construct3dOrientation2(I1_OG,I2_OG, stereoParams, I1);
         
         I1 = insertMarker(I1,cnt_img1,'+','color',{'green'},'size',20);
         worldPoints = worldPoints/10;% we divide by 10 to convert mm to cm
@@ -67,7 +66,7 @@ while hasFrame(rd1)
             prevPoints = worldPoints; 
         end  
         
-        I1 = insertText(I1, [100 280 ], ['[ roll: ' angle ' pitch: ' num2str(orn(2)) ' yaw: ' num2str(orn(3)) ' ]']);
+        I1 = insertText(I1, [100 280 ], ['[ roll: ' num2str(orn(1)) ' pitch: ' num2str(orn(2)) ' yaw: ' num2str(orn(3)) ' ]']);
         I1 = insertText(I1, [100 315 ], ['coords (cm): ' '[ X: ' num2str(worldPoints(1)) ' Y: ' num2str(worldPoints(2)) ' Z: ' num2str(worldPoints(3)) ' ]']);
         
         I1 = insertText(I1, [100 350 ], ['speed: ' num2str(spd_total) ' Meters Per Sec']);
