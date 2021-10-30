@@ -11,14 +11,22 @@ FRAME_RECORD = 1  # default should be 1
 # number of frames recorded will be NUM_FRAMES/FRAME_RECORD
 
 
-def capture_video(cn1, cn2):
+def capture_video(cam_index_1, cam_index_2):
+    """This function captures video from two cameras at roughly the same time
+
+    cam_index_1 - The index of the first camera connected to the PC
+    cam_index_2 - The index of the second camera connected to the PC
+
+
+    the videos will be saved into folder ./webcam/outputs as output1.avi and output2.avi
+    """
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
     out1 = cv2.VideoWriter('./webcam/outputs/output1.avi', fourcc, FPS, (640, 480))
     out2 = cv2.VideoWriter('./webcam/outputs/output2.avi', fourcc, FPS, (640, 480))
 
-    cap1 = cv2.VideoCapture(cn1)
-    cap2 = cv2.VideoCapture(cn2)
+    cap1 = cv2.VideoCapture(cam_index_1)
+    cap2 = cv2.VideoCapture(cam_index_2)
     ct = 0
     while ct != NUM_FRAMES:
 
