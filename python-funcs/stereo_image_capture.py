@@ -22,5 +22,10 @@ def capture_img(cn1, cn2):
     cam2.release()
 
 
-time.sleep(2)
-capture_img(0, 1)
+def main():
+    time.sleep(2)
+    capture_img(0, 1)
+
+
+if __name__ == "__main__":
+    main()
