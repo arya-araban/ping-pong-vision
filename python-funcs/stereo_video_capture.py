@@ -54,7 +54,7 @@ def merge_video(vid1, vid2, output):
 
 def main():
     time.sleep(2)
-    capture_video()
+    capture_video(0, 1)
 
 
 if __name__ == "__main__":
