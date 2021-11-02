@@ -11,11 +11,11 @@ prevPoints = [0 0 0];
 overall_worldpoints = zeros(numFrames+10,4); %stores balls location in frame seen: x,y,z, speed
 
 
-FPS = 30.0;
+FPS = 30.0; %fps of the cameras we have 
 FTC = FPS/2; %frames to consider per second for speed -- to get every frame, put equal to FPS
-%time_frame = 0; offset = 0;%this is for gravity accaleration
 frames_speed = FPS/FTC; % we want to get each "n" frames, ie each 2 frames at a time. 
 spd_total=0; missed_frames = 0;
+%time_frame = 0; offset = 0;%this is for gravity accaleration
 
 
 
@@ -24,20 +24,16 @@ while hasFrame(rd1)
     I1_OG = read(rd1,c);
     I2_OG = read(rd2,c);
     
-    I1 = single(createBlueBallMask(I1_OG));
-    I2 = single(createBlueBallMask(I2_OG));
+    I1 = single(createRedRacketMask(I1_OG));
+    I2 = single(createRedRacketMask(I2_OG));
     
     [cnt_img1, ~] = blob(I1);
     [cnt_img2, ~] = blob(I2);
     
     if isequal(size(cnt_img1),[1, 2]) && isequal(size(cnt_img2),[1, 2])
         
-        
-        mp1 = (cnt_img1(1,:));
-        mp2 = (cnt_img2(1,:));
-        
-        worldPoints = triangulate(mp1,mp2,stereoParams);  
-        [orn, I1]= construct3dOrientation2(I1_OG,I2_OG, stereoParams, I1);
+        worldPoints = triangulate(cnt_img1,cnt_img2,stereoParams);  
+        [orn, I1]= construct3dOrientation(I1_OG,I2_OG, stereoParams, I1);
         
         I1 = insertMarker(I1,cnt_img1,'+','color',{'green'},'size',20);
         worldPoints = worldPoints/10;% we divide by 10 to convert mm to cm
@@ -45,12 +41,13 @@ while hasFrame(rd1)
         %time_frame = time_frame + 1; 
         if rem(c,frames_speed) == 0
             %spd_total is the speed considering all axis'. 
-            %velocity_seperate has the vel for each axis' (can be either
-            %positive or negative, with respect to previous location)
+            
             
             spd_total = norm(worldPoints-prevPoints)* (FTC/(missed_frames+1))/100; %divide by another 100 to find MPS else it'll be CMPS
             
             %now we look to predict trajectory by using trajectory formula x1=x0+(v*deltaT)
+            %velocity_seperate has the vel for each axis' (can be either
+            %positive or negative, with respect to previous location)
             %UNCOMMENT LINES TO GET PREDICTED NEXT POINT
             %{
                 velocity_seperate = (worldPoints-prevPoints)/(missed_frames+1); %keep this in CM since world points in CM

@@ -1,4 +1,4 @@
-function [orientation,img] = construct3dOrientation2(img1,img2, stereoParams,racket_masked_img1)
+function [orientation,img] = construct3dOrientation(img1,img2, stereoParams,racket_masked_img1)
 %this function takes in two colored images(two images of same frame),
 %and we use markers on the racket to find the three points we want.
 %then triangulate the corresponding points to end up with three 3d vectors.
@@ -49,3 +49,5 @@ function [orientation,img] = construct3dOrientation2(img1,img2, stereoParams,rac
 
   
 end
+
+
