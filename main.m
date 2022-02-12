@@ -1,21 +1,21 @@
+rd1 = VideoReader('videos/video1.avi');
+rd2 = VideoReader('videos/video2.avi');
 
-v1 = VideoWriter('myFile.avi');
-rd1 = VideoReader('videos/output1.avi');
-rd2 = VideoReader('videos/output2.avi');
+v1 = VideoWriter('myOutput.avi');
 v1.VideoCompressionMethod
-numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
 open(v1)
 
 worldPoints = [0 0 0];
 prevPoints = [0 0 0];
+
+numFrames = ceil(rd1.FrameRate*rd1.Duration)-5;
 overall_worldpoints = zeros(numFrames+10,4); %stores balls location in frame seen: x,y,z, speed
 
 
 FPS = 30.0; %fps of the cameras we have 
 FTC = FPS/2; %frames to consider per second for speed -- to get every frame, put equal to FPS
-frames_speed = FPS/FTC; % we want to get each "n" frames, ie each 2 frames at a time. 
+frames_speed = FPS/FTC; % we want to get once each "n" frames, ie once each 2 frames. 
 spd_total=0; missed_frames = 0;
-%time_frame = 0; offset = 0;%this is for gravity accaleration
 
 
 
@@ -27,8 +27,8 @@ while hasFrame(rd1)
     I1 = single(createRedRacketMask(I1_OG));
     I2 = single(createRedRacketMask(I2_OG));
     
-    [cnt_img1, ~] = blob(I1);
-    [cnt_img2, ~] = blob(I2);
+    cnt_img1 = blob(I1);
+    cnt_img2 = blob(I2);
     
     if isequal(size(cnt_img1),[1, 2]) && isequal(size(cnt_img2),[1, 2])
         
@@ -49,11 +49,12 @@ while hasFrame(rd1)
             %velocity_seperate has the vel for each axis' (can be either
             %positive or negative, with respect to previous location)
             %UNCOMMENT LINES TO GET PREDICTED NEXT POINT
+            
             %{
-                velocity_seperate = (worldPoints-prevPoints)/(missed_frames+1); %keep this in CM since world points in CM
-                accaleration = [0, 0.5*9.81*(time_frame/FPS)^2+offset, 0];
-                predicted_next_points = worldPoints + (velocity_seperate) + accaleration;
-                [num2str(c) '---current_world_points:' mat2str(worldPoints) 'predicted next points:' mat2str(predicted_next_points)]
+            velocity_seperate = (worldPoints-prevPoints); %keep this in CM since world points in CM
+            accaleration = [0, 0.5*9.81*(missed_frames+1/FPS)^2+offset, 0];
+            predicted_next_points = worldPoints + (velocity_seperate) * (missed_frames+1/FPS) + accaleration;
+            [num2str(c) '---current_world_points:' mat2str(worldPoints) 'predicted next points:' mat2str(predicted_next_points)]
             %}
             
             %reset the valus
