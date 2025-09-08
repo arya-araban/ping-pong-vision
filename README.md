@@ -6,3 +6,6 @@ these include:
 - Plotting the trajectory of the moving ping-pong ball 
 - Predicting the ball's movement based on the trajectory 
 - Tracking the ping-pong racket with markers, and getting the Euler angles of the racket in each frame. 
+
+
+Note: The code made public here represents the prototyping stage of the project. The final implementation was transitioned to a proprietary Python and OpenCV-based system for real-time processing.
