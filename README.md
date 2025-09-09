@@ -8,4 +8,4 @@ these include:
 - Tracking the ping-pong racket with markers, and getting the Euler angles of the racket in each frame. 
 
 
-Note: The code made public here represents the prototyping stage of the project. The final implementation was transitioned to a proprietary Python and OpenCV-based system for real-time processing.
+**Note:** The code made public here represents the prototyping stage of the project, where I was using a minimal setup to validate developed algorithms. The final implementation was transitioned to a proprietary Python and OpenCV-based system for real-time processing.
